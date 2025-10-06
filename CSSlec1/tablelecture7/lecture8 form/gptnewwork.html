@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Floating Sorcerer — CSS VFX (Fire / Ice)</title>
+<style>
+  :root {
+    /* FIRE palette (default) */
+    --bg-1: #05060a;
+    --bg-2: #0b0d14;
+    --glow-1: #ff7a00;   /* hot orange */
+    --glow-2: #ff2d2d;   /* lava red   */
+    --glow-3: #ffd166;   /* ember gold */
+    --ring-1: #ff8a00;   /* outer ring */
+    --ring-2: #ff3b3b;   /* inner ring */
+    --spark:  #fff1b8;   /* spark tint */
+    --mist: rgba(255,120,0,0.12);
+  }
+
+  /* ICE theme overrides when toggled */
+  #mode:checked ~ .stage {
+    --bg-1: #03060a;
+    --bg-2: #07111d;
+    --glow-1: #41d1ff;   /* cyan      */
+    --glow-2: #9ae6ff;   /* pale ice  */
+    --glow-3: #d2f3ff;   /* frost     */
+    --ring-1: #3ac9ff;
+    --ring-2: #7ee1ff;
+    --spark:  #eaffff;
+    --mist: rgba(120,200,255,0.12);
+  }
+
+  /* Base page */
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background:
+      radial-gradient(1200px 800px at 50% 60%, var(--bg-2), transparent 70%),
+      radial-gradient(900px 600px at 50% 40%, var(--bg-1), #000 70%);
+    color: #dbe0ea;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
+    overflow: hidden;
+  }
+
+  /* Simple top control */
+  .toolbar {
+    position: fixed;
+    inset: 16px 16px auto auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    user-select: none;
+  }
+  .toggle {
+    position: relative;
+    width: 62px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.35));
+  }
+  .knob {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #111;
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,0.12),
+      0 6px 10px rgba(0,0,0,0.35);
+    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  #mode { display: none; }
+  #mode:checked + label .knob { transform: translateX(30px); }
+  .label-fire, .label-ice { font-size: 12px; letter-spacing:.2px; opacity:.8 }
+  .label-fire { color: var(--glow-2); }
+  .label-ice  { color: var(--glow-1); }
+
+  /* Stage centers everything */
+  .stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 100%;
+    isolation: isolate;
+  }
+
+  /* Floating, subtle camera drift */
+  .scene {
+    position: relative;
+    width: min(80vmin, 700px);
+    aspect-ratio: 1/1;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.6));
+    animation: drift 20s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%,100% { transform: translateY(0) rotate(0deg) }
+    50%     { transform: translateY(-6px) rotate(.2deg) }
+  }
+
+  /* Energetic rings behind the character */
+  .rings, .rings::before, .rings::after {
+    position: absolute; inset: 0; border-radius: 50%;
+    content: "";
+  }
+  .rings {
+    background:
+      radial-gradient(closest-side, rgba(255,255,255,0.08), transparent 60%),
+      conic-gradient(from 0deg,
+        var(--ring-1) 0 20%,
+        transparent 20% 40%,
+        var(--ring-2) 40% 60%,
+        transparent 60% 80%,
+        var(--ring-1) 80% 100%);
+    filter: blur(1px) saturate(130%);
+    animation: spin 14s linear infinite;
+    opacity: .7;
+  }
+  .rings::before {
+    background:
+      conic-gradient(from 180deg,
+        transparent 0 12%,
+        var(--ring-2) 12% 28%,
+        transparent 28% 56%,
+        var(--ring-1) 56% 70%,
+        transparent 70% 100%);
+    transform: scale(.82);
+    filter: blur(6px);
+    animation: spin-rev 18s linear infinite;
+    opacity:.9;
+  }
+  .rings::after {
+    background:
+      radial-gradient(circle at 50% 50%,
+        rgba(255,255,255,0.12), transparent 35%),
+      conic-gradient(from 90deg,
+        transparent 0 35%,
+        var(--glow-1) 35% 45%,
+        transparent 45% 80%,
+        var(--glow-2) 80% 90%,
+        transparent 90% 100%);
+    transform: scale(.55);
+    filter: blur(10px) brightness(1.1);
+    animation: spin 26s linear infinite;
+    opacity: .8;
+  }
+  @keyframes spin     { to { transform: rotate(360deg) } }
+  @keyframes spin-rev { to { transform: rotate(-360deg) } }
+
+  /* Volumetric plume (fire or cold mist) */
+  .plume, .plume::before, .plume::after {
+    position: absolute; inset: 0; content: ""; border-radius: 50%;
+  }
+  .plume {
+    background:
+      radial-gradient(60% 60% at 50% 60%, var(--mist), transparent 70%),
+      radial-gradient(40% 40% at 50% 65%, rgba(255,255,255,0.05), transparent 60%);
+    filter: blur(20px);
+    animation: breathe 5.5s ease-in-out infinite;
+  }
+  .plume::before {
+    background:
+      conic-gradient(from 0deg,
+        rgba(255,255,255,0) 0 75%,
+        rgba(255,255,255,0.08) 75% 100%);
+    transform: scale(0.9);
+    filter: blur(30px);
+    mix-blend-mode: screen;
+    animation: swirl 12s linear infinite;
+  }
+  .plume::after {
+    background:
+      radial-gradient(30% 25% at 50% 85%, var(--glow-1), transparent 70%),
+      radial-gradient(25% 20% at 50% 90%, var(--glow-2), transparent 70%),
+      radial-gradient(20% 15% at 50% 95%, var(--glow-3), transparent 70%);
+    transform: translateY(10%);
+    filter: blur(30px) saturate(140%);
+    animation: lift 6s ease-in-out infinite;
+    opacity: .8;
+  }
+  @keyframes breathe {
+    0%,100% { transform: scale(1);      opacity:.75 }
+    50%     { transform: scale(1.04);   opacity:.95 }
+  }
+  @keyframes swirl { to { transform: scale(0.9) rotate(360deg) } }
+  @keyframes lift  {
+    0%,100% { transform: translateY(10%) scale(1) }
+    50%     { transform: translateY(-2%) scale(1.03) }
+  }
+
+  /* Particle sparks (embers or snow) */
+  .sparks, .sparks::before, .sparks::after {
+    position: absolute; inset: 0; content: "";
+    pointer-events: none;
+  }
+  .sparks {
+    --shadow:
+      0  -20vmin 0 var(--spark),
+      6vmin -18vmin 0 var(--spark),
+      -8vmin -22vmin 0 var(--spark),
+      10vmin -16vmin 0 var(--spark),
+      -12vmin -19vmin 0 var(--spark),
+      14vmin -24vmin 0 var(--spark),
+      -16vmin -15vmin 0 var(--spark);
+    box-shadow: var(--shadow);
+    width: 2px; height: 2px; border-radius: 50%;
+    filter: blur(.6px);
+    transform: translateY(40%);
+    animation: rise 8s linear infinite;
+  }
+  .sparks::before {
+    box-shadow: var(--shadow);
+    width: 2px; height: 2px; border-radius: 50%;
+    transform: translateY(20%) translateX(8%);
+    animation: rise 9.5s linear infinite;
+    opacity: .8;
+  }
+  .sparks::after {
+    box-shadow: var(--shadow);
+    width: 3px; height: 3px; border-radius: 50%;
+    transform: translateY(60%) translateX(-6%);
+    animation: rise 7s linear infinite;
+    opacity: .6;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(60%) scale(.9); opacity: 0 }
+    10%  { opacity: .6 }
+    100% { transform: translateY(-60%) scale(1.1); opacity: 0 }
+  }
+
+  /* Floating character (neutral silhouette to avoid IP) */
+  .caster {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    transform-style: preserve-3d;
+    animation: hover 3s ease-in-out infinite;
+  }
+  @keyframes hover {
+    0%,100% { transform: translateY(-2%) }
+    50%     { transform: translateY(-6%) }
+  }
+
+  .body {
+    position: relative;
+    width: 28%;
+    aspect-ratio: 3/5;
+    border-radius: 48% 48% 38% 38% / 20% 20% 80% 80%; /* robe shape */
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.10), rgba(255,255,255,0) 50%),
+      linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.95));
+    overflow: visible;
+    filter:
+      drop-shadow(0 10px 20px rgba(0,0,0,0.6))
+      drop-shadow(0 0 25px rgba(0,0,0,0.7));
+  }
+
+  /* Head */
+  .head {
+    position: absolute;
+    top: -18%;
+    left: 50%;
+    width: 40%;
+    aspect-ratio: 1/1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background:
+      radial-gradient(120% 100% at 45% 35%, rgba(255,255,255,0.15), rgba(0,0,0,0.9) 60%),
+      #000;
+    box-shadow:
+      0 0 30px rgba(0,0,0,0.8),
+      0 0 80px var(--glow-1);
+  }
+  /* “Eyes” slit (stylized, not any specific character) */
+  .head::before {
+    content: "";
+    position: absolute;
+    left: 50%; top: 52%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 10%;
+    border-radius: 999px;
+    background:
+      radial-gradient(60% 180% at 50% 0%, var(--glow-3), transparent 70%),
+      linear-gradient(90deg, transparent 0 15%, var(--glow-2) 15% 85%, transparent 85% 100%);
+    filter: blur(2px) saturate(160%);
+    box-shadow:
+      0 0 12px var(--glow-2),
+      0 0 22px var(--glow-1);
+    animation: blink 4.5s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 8%, 100% { height: 10% }
+    4%           { height: 1% }
+  }
+
+  /* Sash / belt glow */
+  .body::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 56%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 10%;
+    border-radius: 999px;
+    background:
+      radial-gradient(60% 200% at 50% 50%, rgba(255,255,255,0.12), transparent 60%),
+      linear-gradient(90deg, var(--glow-1), var(--glow-2));
+    filter: blur(8px) brightness(1.2);
+    opacity: .7;
+  }
+
+  /* Grounded shadow */
+  .shadow {
+    position: absolute;
+    left: 50%; bottom: 16%;
+    transform: translateX(-50%);
+    width: 34%;
+    height: 3.6%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0,0,0,0.6), rgba(0,0,0,0));
+    filter: blur(6px);
+    animation: shadowPulse 3s ease-in-out infinite;
+  }
+  @keyframes shadowPulse {
+    0%,100% { transform: translateX(-50%) scale(1) }
+    50%     { transform: translateX(-50%) scale(1.06) }
+  }
+
+  /* Accessibility: reduce motion if requested */
+  @media (prefers-reduced-motion: reduce) {
+    .scene, .rings, .rings::before, .rings::after,
+    .plume, .plume::before, .plume::after,
+    .sparks, .sparks::before, .sparks::after,
+    .caster, .shadow, .head::before { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Theme toggle (pure CSS) -->
+  <input type="checkbox" id="mode" />
+  <label class="toolbar" for="mode" title="Toggle FIRE / ICE">
+    <span class="label-fire">FIRE</span>
+    <span class="toggle"><span class="knob"></span></span>
+    <span class="label-ice">ICE</span>
+  </label>
+
+  <!-- Main stage -->
+  <div class="stage">
+    <div class="scene" aria-label="Mystic caster floating with elemental aura">
+      <div class="rings"></div>
+      <div class="plume"></div>
+      <div class="sparks"></div>
+
+      <div class="caster">
+        <div class="body">
+          <div class="head"></div>
+        </div>
+      </div>
+
+      <div class="shadow" aria-hidden="true"></div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pure CSS Sukuna — Flames VFX</title>
+<style>
+/* ============ THEME & SCALES ============ */
+:root{
+  --bg-1:#05060a;
+  --bg-2:#09050a;
+  --bg-3:#000;
+  --flame-1:#ff6a00;   /* orange */
+  --flame-2:#ff2e2e;   /* lava red */
+  --flame-3:#ffd36a;   /* ember gold */
+  --flame-4:#b5003b;   /* magenta accent */
+  --aura:#7a1bff33;    /* cursed energy tint */
+  --spark:#fff1b8;     /* embers */
+  --skin-hi:#ffd7b0;
+  --skin:#f3c69a;
+  --skin-lo:#dca67d;
+  --hair1:#f7a6c2;     /* pink hair lights */
+  --hair2:#e283a7;     /* pink hair mid  */
+  --hair3:#c45f86;     /* hair shadows   */
+  --ink:#0c0c0c;       /* tattoos / pants */
+  --eye:#ff3d3d;       /* eye glow */
+  --nail:#0b0b0b;
+  --unit: min(1vmin, 0.9vh);
+}
+
+/* ============ GLOBAL LAYOUT ============ */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#000;font-family:system-ui,Segoe UI,Inter,Roboto,sans-serif;color:#e8ecf4}
+.scene{
+  position:relative; width:100%; height:100%;
+  display:grid; place-items:center; isolation:isolate;
+  background:
+    radial-gradient(1200px 800px at 50% 65%, var(--bg-2), transparent 70%),
+    radial-gradient(900px 600px at 50% 35%, var(--bg-1), var(--bg-3) 70%);
+  filter: saturate(108%);
+}
+
+/* ============ BACKGROUND VFX ============ */
+.vfx{
+  position:absolute; inset:0; pointer-events:none;
+}
+.rings,.rings::before,.rings::after{
+  position:absolute; inset:0; content:""; border-radius:50%;
+}
+.rings{
+  background:
+    radial-gradient(closest-side, rgba(255,255,255,.07), transparent 60%),
+    conic-gradient(from 0deg,
+      #ff8a00 0 18%, transparent 18% 38%,
+      #ff3b3b 38% 58%, transparent 58% 78%,
+      #ff8a00 78% 100%);
+  filter: blur(1px) saturate(140%);
+  opacity:.8; animation: spin 16s linear infinite;
+}
+.rings::before{
+  background: conic-gradient(from 180deg,
+    transparent 0 12%, #ff3b3b 12% 26%, transparent 26% 54%,
+    #ff8a00 54% 70%, transparent 70% 100%);
+  transform:scale(.82); filter:blur(6px); opacity:.9; animation: spin-rev 22s linear infinite;
+}
+.rings::after{
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.12), transparent 35%),
+    conic-gradient(from 90deg, transparent 0 35%, var(--flame-1) 35% 45%, transparent 45% 80%, var(--flame-2) 80% 90%, transparent 90% 100%);
+  transform:scale(.56); filter:blur(10px) brightness(1.1); opacity:.85; animation: spin 30s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes spin-rev{to{transform:rotate(-360deg)}}
+
+/* Flames: stacked layers with conic/radial gradients */
+.flame, .flame::before, .flame::after{ position:absolute; inset:-8% -10%; content:""; }
+.flame{
+  background:
+    radial-gradient(120% 80% at 50% 80%, #0000 20%, var(--aura) 35%, #0000 60%),
+    conic-gradient(from 0deg,
+      #0000 0 10%, var(--flame-1) 10% 15%, #0000 15% 25%,
+      var(--flame-2) 25% 35%, #0000 35% 45%,
+      var(--flame-1) 45% 55%, #0000 55% 70%,
+      var(--flame-3) 70% 75%, #0000 75% 100%);
+  filter: blur(22px);
+  animation: flare 6s ease-in-out infinite;
+  opacity:.85;
+}
+.flame::before{
+  background:
+    conic-gradient(from 30deg, #0000 0 18%, var(--flame-2) 18% 22%, #0000 22% 40%,
+      var(--flame-1) 40% 52%, #0000 52% 66%, var(--flame-2) 66% 70%, #0000 70% 100%);
+  filter: blur(30px);
+  animation: swirl 18s linear infinite;
+  mix-blend-mode:screen;
+}
+.flame::after{
+  background:
+    radial-gradient(40% 30% at 50% 88%, var(--flame-1), #0000 70%),
+    radial-gradient(35% 25% at 50% 92%, var(--flame-2), #0000 70%),
+    radial-gradient(30% 22% at 50% 96%, var(--flame-3), #0000 70%);
+  filter: blur(34px) saturate(145%);
+  animation: plumeLift 5.5s ease-in-out infinite;
+  opacity:.85;
+}
+@keyframes flare{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.06);opacity:1}}
+@keyframes swirl{to{transform:rotate(360deg)}}
+@keyframes plumeLift{0%,100%{transform:translateY(2%)}50%{transform:translateY(-1%)}}
+
+/* Embers using huge box-shadow lists for performance */
+.embers,.embers::before,.embers::after{
+  position:absolute; inset:0; content:""; pointer-events:none; filter: blur(.6px);
+}
+.embers{
+  --set: 
+   0 -20vmin 0 var(--spark),  6vmin -18vmin 0 var(--spark),
+  -8vmin -24vmin 0 var(--spark),10vmin -16vmin 0 var(--spark),
+ -12vmin -19vmin 0 var(--spark),14vmin -26vmin 0 var(--spark),
+ -16vmin -15vmin 0 var(--spark), 2vmin -30vmin 0 var(--spark),
+ -4vmin -34vmin 0 var(--spark),18vmin -28vmin 0 var(--spark);
+  width:2px; height:2px; border-radius:50%; box-shadow:var(--set);
+  transform:translateY(55%); animation: rise 8s linear infinite;
+}
+.embers::before{ box-shadow:var(--set); width:2px; height:2px; border-radius:50%;
+  transform:translateY(35%) translateX(8%); animation: rise 10s linear infinite; opacity:.8;}
+.embers::after{ box-shadow:var(--set); width:3px; height:3px; border-radius:50%;
+  transform:translateY(70%) translateX(-6%); animation: rise 7s linear infinite; opacity:.6;}
+@keyframes rise{
+  0%{transform:translateY(70%) scale(.9);opacity:0}
+  10%{opacity:.65}
+  100%{transform:translateY(-70%) scale(1.1);opacity:0}
+}
+
+/* Heat shimmer overlay */
+.shimmer{
+  position:absolute; inset:-4% -4% -6% -4%; pointer-events:none; z-index:3;
+  background:
+    radial-gradient(200px 140px at 40% 35%, rgba(255,255,255,.04), transparent 60%),
+    radial-gradient(260px 200px at 60% 70%, rgba(255,255,255,.03), transparent 65%);
+  animation: shimmer 6s ease-in-out infinite;
+  mix-blend-mode: screen; filter: blur(10px); opacity:.55;
+}
+@keyframes shimmer{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,-10px,0)}}
+
+/* ============ CHARACTER ============ */
+.character{
+  position:relative;
+  width: clamp(240px, 36vmin, 560px);
+  aspect-ratio: 3/5;
+  z-index:4;
+  animation: hover 3.4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+@keyframes hover{0%,100%{transform:translateY(-1%)}50%{transform:translateY(-5%)}}
+
+/* soft rim glow behind character */
+.character::before{
+  content:""; position:absolute; inset:-6%;
+  background:
+    radial-gradient(60% 80% at 50% 30%, #fff0, #fff2 40%, transparent 70%),
+    radial-gradient(60% 80% at 50% 70%, #fff0, #fff2 35%, transparent 75%);
+  box-shadow: 0 0 30px var(--flame-1), 0 0 80px var(--flame-2);
+  filter: blur(18px) saturate(130%); opacity:.55; border-radius:20%;
+}
+
+/* Ground shadow */
+.ground{
+  position:absolute; left:50%; bottom:-1%;
+  transform:translateX(-50%); width: 48%; height: 5%;
+  background: radial-gradient(closest-side, rgba(0,0,0,.6), rgba(0,0,0,0));
+  border-radius:50%; filter: blur(8px); z-index:2;
+  animation: shadowPulse 3.4s ease-in-out infinite;
+}
+@keyframes shadowPulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}
+
+/* === BODY BLOCKS === */
+.part{ position:absolute; }
+
+/* --- HEAD --- */
+.head{
+  --w: 34%;
+  width:var(--w); aspect-ratio: 1/1.08; left:50%; top:3%;
+  transform:translateX(-50%);
+  background:
+    radial-gradient(60% 50% at 50% 20%, #fff3, #0000 60%),
+    linear-gradient(180deg, var(--skin-hi), var(--skin) 60%, var(--skin-lo) 100%);
+  border-radius: 45% 52% 44% 50% / 40% 42% 58% 60%;
+  box-shadow:
+    inset 0 -0.6vmin 0.8vmin #0002,
+    0 0.4vmin 0.8vmin #0006;
+}
+
+/* Facial tattoos (brows/under-eye/bridge) */
+.head::before, .head::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+}
+/* bridge stripe + under-eye slashes */
+.head::before{
+  background:
+    /* bridge */
+    linear-gradient( to bottom, #0000 0 40%, #000 40% 44%, #0000 44% 48%, #000 48% 52%, #0000 52%),
+    /* under-eye */
+    conic-gradient(from 180deg at 30% 58%, #000 0 20%, #0000 20%),
+    conic-gradient(from 0deg at 70% 58%, #000 0 20%, #0000 20%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0);
+  opacity:.95;
+}
+/* brow accents */
+.head::after{
+  background:
+    conic-gradient(from 210deg at 28% 42%, #000 0 25%, #0000 25%),
+    conic-gradient(from -30deg at 72% 42%, #000 0 25%, #0000 25%);
+  opacity:.95;
+}
+
+/* Eyes */
+.eye{
+  position:absolute; top:45%; width:18%; height:10%;
+  background: radial-gradient(100% 200% at 50% 60%, #fff, #cfd3d6 60%, #0000 61%),
+              radial-gradient(100% 200% at 50% 50%, var(--eye), #0000 70%);
+  border-radius: 60% 60% 40% 40% / 55% 55% 45% 45%;
+  box-shadow:
+    0 0 0.6vmin var(--eye), 0 0 1.4vmin var(--eye);
+  animation: eyePulse 4.8s ease-in-out infinite;
+}
+@keyframes eyePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
+.eye.left{ left:24%; transform:skewX(-8deg)}
+.eye.right{ right:24%; transform:skewX(8deg)}
+
+/* Pupils (cat-like slit) */
+.eye::after{
+  content:""; position:absolute; left:50%; top:20%;
+  transform:translateX(-50%); width:18%; height:60%;
+  background:#000; border-radius:50%/20%;
+}
+
+/* Mouth (smirk) */
+.mouth{
+  position:absolute; left:50%; top:66%; width:28%; height:10%;
+  transform:translateX(-50%) rotate(-2deg);
+  background:
+    radial-gradient(100% 200% at 50% 50%, #000 0 40%, #0000 41%),
+    linear-gradient( to right, #0000 0 14%, #fff 15% 85%, #0000 86% );
+  -webkit-mask:
+    radial-gradient(120% 120% at 50% 0%, #000 40%, #0000 41%);
+  filter: drop-shadow(0 .2vmin .2vmin #0006);
+}
+
+/* Hair wrapper */
+.hair{
+  position:absolute; inset:-12% -6% auto -6%; height:50%;
+  pointer-events:none; filter: drop-shadow(0 .4vmin .8vmin #0006);
+}
+/* Each spike */
+.spike{
+  position:absolute; bottom:0;
+  width:10%; height:70%;
+  background:
+    linear-gradient(180deg, var(--hair1), var(--hair2) 50%, var(--hair3) 100%);
+  clip-path: polygon(50% 0, 80% 30%, 70% 100%, 30% 100%, 20% 30%);
+  border-radius: 8% 8% 40% 40%/ 10% 10% 70% 70%;
+  transform-origin: bottom center;
+  animation: sway 3.4s ease-in-out infinite;
+}
+@keyframes sway{0%,100%{transform:rotate(0deg)}50%{transform:rotate(3deg)}}
+/* place spikes */
+.sp1{left:4%; height:62%; animation-delay:-.1s}
+.sp2{left:12%; height:70%; animation-delay:-.5s}
+.sp3{left:22%; height:78%; animation-delay:-.2s}
+.sp4{left:34%; height:86%; animation-delay:-.9s}
+.sp5{left:46%; height:88%; animation-delay:-.4s}
+.sp6{left:58%; height:84%; animation-delay:-.7s}
+.sp7{left:70%; height:74%; animation-delay:-.3s}
+.sp8{left:82%; height:62%; animation-delay:-.6s}
+
+/* --- NECK --- */
+.neck{
+  width:12%; height:9%; left:50%; top:20%;
+  transform:translateX(-50%);
+  background: linear-gradient(180deg, var(--skin), var(--skin-lo));
+  border-radius: 30%/40%;
+  box-shadow: inset 0 -.3vmin .8vmin #0003;
+}
+
+/* --- TORSO --- */
+.torso{
+  width:42%; height:44%; left:50%; top:25%;
+  transform:translateX(-50%);
+  background:
+    /* flame light from below */
+    radial-gradient(80% 60% at 50% 90%, #fff3, #0000 60%),
+    linear-gradient(180deg, var(--skin-hi), var(--skin) 40%, var(--skin-lo) 100%);
+  border-radius: 48% 48% 30% 30% / 22% 22% 68% 68%;
+  box-shadow:
+    inset 0 -1.2vmin 2vmin #0003,
+    0 .3vmin .9vmin #0007;
+}
+/* Pectoral/abs shading */
+.torso::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(40% 20% at 35% 28%, #0002, #0000 70%),
+    radial-gradient(40% 20% at 65% 28%, #0002, #0000 70%),
+    radial-gradient(20% 50% at 50% 64%, #0002, #0000 60%),
+    radial-gradient(18% 30% at 50% 78%, #0002, #0000 50%);
+  pointer-events:none;
+}
+/* Chest/abdomen tattoos */
+.torso::after{
+  content:""; position:absolute; inset:6% 10% 10%;
+  background:
+    /* left shoulder band -> chest */
+    conic-gradient(from 220deg at 0% 10%, #000 0 20%, #0000 20%),
+    /* right shoulder band -> chest */
+    conic-gradient(from -40deg at 100% 10%, #000 0 20%, #0000 20%),
+    /* center zig */
+    linear-gradient( to bottom, #0000 0 30%, #000 30% 34%, #0000 34% 50%, #000 50% 54%, #0000 54% 100%);
+  opacity:.98;
+}
+
+/* --- ARMS --- */
+.arm{
+  width:16%; height:42%; top:29%;
+  background: linear-gradient(180deg, var(--skin), var(--skin-lo));
+  border-radius: 40%/50%;
+  box-shadow: inset 0 -.8vmin 1.4vmin #0003, 0 .4vmin .8vmin #0007;
+}
+.arm.left{ left: 8%; transform: rotate(6deg) }
+.arm.right{ right: 6%; transform: rotate(-8deg) }
+
+/* Forearm extensions */
+.forearm{
+  position:absolute; width:84%; height:58%; left:8%; top:42%;
+  background: linear-gradient(180deg, var(--skin), var(--skin-lo));
+  border-radius: 30%/50%;
+  box-shadow: inset 0 -.6vmin 1.2vmin #0003;
+}
+
+/* Tattoo stripes on arms */
+.arm .ink, .forearm .ink{
+  position:absolute; inset:0; content:"";
+}
+.arm.left .ink{ background:
+  linear-gradient( to bottom, #0000 0 12%, #000 12% 18%, #0000 18% 32%, #000 32% 38%, #0000 38% 60%); }
+.arm.right .ink{ background:
+  linear-gradient( to bottom, #0000 0 16%, #000 16% 22%, #0000 22% 40%, #000 40% 46%, #0000 46% 64%); }
+.forearm .ink{ background:
+  linear-gradient( to bottom, #0000 0 30%, #000 30% 36%, #0000 36% 62%, #000 62% 68%, #0000 68% 100%); }
+
+/* --- RIGHT HAND (raised) --- */
+.hand{
+  position:absolute; right:-6%; top:-10%;
+  width: 72%; height: 60%;
+  transform: rotate(-6deg);
+}
+.palm{
+  position:absolute; left:30%; top:30%; width:38%; height:44%;
+  background: linear-gradient(180deg, var(--skin), var(--skin-lo));
+  border-radius: 40%/38%;
+  box-shadow: inset 0 -.4vmin 1vmin #0003;
+}
+/* Fingers (slightly bent) */
+.finger{
+  position:absolute; width:14%; height:54%;
+  background: linear-gradient(180deg, var(--skin), var(--skin-lo));
+  border-radius: 40%/50%;
+  transform-origin: bottom center;
+  box-shadow: inset 0 -.4vmin 1vmin #0003;
+}
+.f1{ left:12%; top:6%; transform:rotate(6deg)}
+.f2{ left:26%; top:2%; transform:rotate(2deg)}
+.f3{ left:40%; top:0%; transform:rotate(-1deg)}
+.f4{ left:54%; top:4%; transform:rotate(-6deg)}
+.thumb{ left:0%; top:36%; height:48%; width:18%; transform:rotate(28deg)}
+
+/* Nails (long, dark, subtle glow) */
+.finger::after{
+  content:""; position:absolute; left:50%; top:-6%;
+  transform:translateX(-50%);
+  width: 70%; height: 18%;
+  background: radial-gradient(100% 130% at 50% 80%, #111, #000);
+  border-radius: 50% 50% 30% 30% / 40% 40% 60% 60%;
+  box-shadow: 0 0 .6vmin var(--eye);
+}
+
+/* --- PANTS & LEGS --- */
+.waist{
+  position:absolute; left:50%; top:64%;
+  transform:translateX(-50%);
+  width:44%; height:6%;
+  background:
+    linear-gradient(180deg, #222, #0b0b0b);
+  border-radius: 40%/80%;
+  box-shadow: inset 0 .2vmin .8vmin #0008;
+}
+.pants{
+  position:absolute; left:50%; top:68%;
+  transform:translateX(-50%);
+  width:46%; height:28%;
+  background:
+    linear-gradient(180deg, #151515, #0d0d0d 60%, #000 100%),
+    radial-gradient(60% 40% at 50% 20%, #ffffff0b, #0000 60%);
+  border-radius: 18% 18% 12% 12% / 8% 8% 90% 90%;
+  box-shadow: inset 0 -.8vmin 1.6vmin #0008, 0 .3vmin .8vmin #0009;
+}
+/* simple leg hints */
+.leg{
+  position:absolute; width:18%; height:18%; bottom:2%; background:#0000;
+  border-radius: 40%;
+}
+.leg.left{ left:28%}
+.leg.right{ right:28%}
+
+/* ============ ACCESSIBILITY: REDUCE MOTION ============ */
+@media (prefers-reduced-motion: reduce){
+  .rings,.flame,.flame::before,.flame::after,.embers,.embers::before,.embers::after,
+  .shimmer,.character,.ground,.eye{ animation:none !important }
+}
+</style>
+</head>
+<body>
+  <div class="scene" aria-label="Sukuna-inspired character floating amidst animated flames">
+    <!-- BACKGROUND VFX -->
+    <div class="vfx rings"></div>
+    <div class="vfx flame"></div>
+    <div class="vfx embers"></div>
+    <div class="vfx shimmer"></div>
+
+    <!-- CHARACTER -->
+    <div class="character">
+      <div class="ground" aria-hidden="true"></div>
+
+      <!-- HEAD -->
+      <div class="part head">
+        <div class="hair">
+          <div class="spike sp1"></div>
+          <div class="spike sp2"></div>
+          <div class="spike sp3"></div>
+          <div class="spike sp4"></div>
+          <div class="spike sp5"></div>
+          <div class="spike sp6"></div>
+          <div class="spike sp7"></div>
+          <div class="spike sp8"></div>
+        </div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+      </div>
+
+      <!-- NECK -->
+      <div class="part neck"></div>
+
+      <!-- TORSO with tattoos -->
+      <div class="part torso"></div>
+
+      <!-- LEFT ARM -->
+      <div class="part arm left">
+        <div class="ink"></div>
+        <div class="forearm">
+          <div class="ink"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT ARM (raised) with hand & nails -->
+      <div class="part arm right">
+        <div class="ink"></div>
+        <div class="forearm">
+          <div class="ink"></div>
+
+          <div class="hand">
+            <div class="palm"></div>
+            <div class="finger f1"></div>
+            <div class="finger f2"></div>
+            <div class="finger f3"></div>
+            <div class="finger f4"></div>
+            <div class="finger thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WAIST + PANTS -->
+      <div class="part waist"></div>
+      <div class="part pants"></div>
+      <div class="leg left"></div>
+      <div class="leg right"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#navlist {
+    padding: 10px;
+    width: 100%;
+    list-style: none;
+    font-size: 2rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+nav {
+    width: 100%;
+    padding-right: 2rem;
+}
+
+.Container {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    background-color: #F0F8FF;
+}
+
+.navContainer {
+    min-height: 80px;
+    width: 100vw;
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 1%, rgba(0, 212, 255, 1) 43%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+#logo {
+    font-size: 2rem;
+    color: white;
+}
+
+a {
+    text-decoration: none;
+    color: azure;
+}
+
+#links {
+    display: flex;
+    gap: 20px;
+}
+
+.footerbox {
+    background: radial-gradient(circle, rgba(63, 94, 251, 1) 65%, rgba(224, 211, 213, 1) 100%);
+    width: 100%;
+    text-align: center;
+    min-height: 40px;
+}
+
+.footerbox p {
+    color: azure;
+    font-size: 2rem;
+}
+
+.contentbox {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 3rem;
+    height: auto;
+    min-height: 100vh;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    gap: 70px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+
+    /* Optional: Add shadow */
+    box-shadow: 0 4px 12px rgb(0, 0, 0);
+}
+
+.item {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.heading {
+    text-align: center;
+}
+
+.rightbox {
+    position: relative;
+    /* overflow: hidden; */
+    width: 30%;
+    height: 40vh;
+    /* padding: 10px; */
+    background-color: #F0F8FF;
+   
+    border-radius: 20px;
+    margin-top: 10px;
+    display: flex;
+    box-shadow: 2px 2px 20px solid black;
+}
+
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    transition:unset ;
+   
+    transition-duration: 400ms;
+     border: 1px solid black;
+     box-shadow: 2px2px 40px rgb(0, 0, 0);
+}
+
+.rightbox:hover{
+    transition-duration: .3s;
+    transform: scale(1.07);
+}
+
+.leftbox {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.leftbox h2 {
+    font-size: 2rem;
+}
+
+.ingredients {
+    font-size: 1.3rem;
+}
+
+.recipe-list {
+    font-size: 1.1rem;
+}
+
+/* Optional: Make layout more responsive */
+/* @media (max-width: 768px) {
+    .item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .rightbox {
+        width: 80%;
+        height: auto;
+    }
+} */
+.overlay{
+    display: flex;
+     position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(41, 40, 40, 0.612);
+    align-items: center;
+justify-content: center;
+color:white;
+border-radius: 20px;
+    font-size: 1.6rem;
+opacity: 0;
+}
+
+.overlay:hover{
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}

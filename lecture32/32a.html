@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D transform</title>
+
+    <style>
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing:border-box;
+
+}
+
+.container
+{
+padding: 1rem;
+background-color: antiquewhite;
+display: grid;
+grid-template-columns: repeat(3,1fr);
+
+
+}
+body{
+    height: 100%;
+    width: 100%;
+
+}
+.item{
+    padding: 2rem;
+    height: 150px;
+    width: 150px;
+    background-color: rgb(48, 184, 196);
+    border: 1px solid black;
+}
+
+#rotateX:hover{
+transform: rotateX(45deg);
+transition-duration: 200ms;
+}
+#rotateY:hover{
+
+    transform: rotateY(45deg);
+}
+#rotateZ:hover{
+
+    transform: rotateZ(45deg);
+
+}
+
+#translateX:hover{
+
+transform: translateX(100px);
+
+}
+
+
+#translateY:hover{
+
+transform: translatey(100px);
+
+}
+ 
+ 
+ 
+#translateZ:hover{
+
+transform: perspective(300px) translatez(100px);
+
+}
+ 
+ #ScaleX:hover{
+transform: scaleX(1.5);
+
+ }
+
+ #ScaleY:hover{
+transform: scaleY(1.5);
+
+ }
+ 
+ #ScaleZ:hover{
+transform: perspective(200px)   rotateY(45deg) ScaleZ(5);
+
+ }
+ 
+ </style>
+</head>
+<body>
+    
+    <div class="container">
+
+<div class="item" id="rotateX">rotatex</div>
+<div class="item" id="rotateY">rotatey</div>
+<div class="item" id="rotateZ">rotatez</div>
+<div class="item" id="translateX">translatex</div>
+<div class="item" id="translateY">translateY</div>
+<div class="item" id="translateZ">translateZ</div>
+<div class="item" id="ScaleX">Scalex</div>
+<div class="item" id="ScaleY">ScaleY</div>
+<div class="item" id="ScaleZ">ScaleZ</div>
+
+
+    </div>
+
+
+</body>
+</html>

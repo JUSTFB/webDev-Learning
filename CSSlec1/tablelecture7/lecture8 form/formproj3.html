@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Complex Form with Terms</title>
+</head>
+<body>
+
+  <form >
+    <h1>Complex form</h1>
+  <fieldset>
+    <legend>Personal Information</legend>
+
+    <label for="name">Name:</label>
+    <input type="text" name="name" id="name">
+
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email">
+
+    <label for="Phone">Phone:</label>
+    <input type="tel" name="Phone" id="Phone">
+
+    <label for="DOB">Date Of Birth</label>
+    <input type="date" name="DOB" id="DOB">
+
+    <br>
+    <h3>Gender:</h3>
+    <label for="male">male</label>
+    <input type="radio" name="gender" id="male" value="male">
+
+    <label for="female">female</label>
+    <input type="radio" name="gender" id="female" value="female">
+
+    <br>
+    <label for="desh">Country</label>
+    <select name="country" id="desh">
+      <option value="">none</option>
+      <option value="US">US</option>
+      <option value="India">India</option>
+      <option value="Nepal">Nepal</option>
+      <option value="Other">other</option>
+    </select>
+
+  </fieldset>
+
+  <fieldset>
+    <legend>Address</legend>
+    <label for="city">Your City</label>
+    <input type="text" id="city" name="city">
+
+    <label for="state">Your State</label>
+    <input type="text" name="state" id="state">
+
+    <label for="zip">Zip Code</label>
+    <input type="number" name="zip" id="zip">
+
+    <fieldset>
+      <legend>Other Information</legend>
+      <textarea name="Comments" id="cmt" placeholder="write down your review"></textarea>
+
+      <a href="TandCform3.html#TC">terms and conditions</a>
+      <label for="TandC"> </label>
+      <input type="checkbox" name="terms" id="TandC">
+    </fieldset>
+
+    <label for="button"></label>
+    <input type="submit" name="" id="button">
+  </fieldset>
+
+  </form>
+  
+
+</body>
+</html>
