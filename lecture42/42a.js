@@ -61,9 +61,12 @@ console.log(op2.slice(-4,-1));
 // let sentence ="hello ji kese ho";
 // let word = sentence.split(" ");
 
-let sentence ="helloji \"kese\" ho";
+let sentence ="hello ji \"kese\" ho";
+
+// we use \ to print special character like " or ' or \ etc
 console.log(sentence);
 let word = sentence.split(" ");
 
+// also learn how to use join function
 
 console.log(word);
