@@ -164,10 +164,26 @@ let arr=[10,20,30,40,50];
 
 // console.log(getsum(arr));
 
-let sum=0;
+// let sum=0;
 
-arr.forEach((value)=>{
-    sum=sum+value;
-    return sum;
-})
-console.log("sum is "+sum);
+// arr.forEach((value)=>{
+//     sum=sum+value;
+//     return sum;
+// })
+// console.log("sum is "+sum);
+
+let array=[10,20,30,40];
+
+let ansArr=array.map((n,i,t,m)=>{
+  console.log(i);
+  console.log(t);
+  console.log(m);
+    return n*n;
+    
+
+});
+
+console.log(ansArr);
+
+
+
