@@ -52,10 +52,8 @@ let multiply = function (a,b){
 let ans =multiply(78,9);
 console.log("multiplication is "+ans);
 
-//arrow function
 
 //normal
-
 let squareNum =function(x,y){
     return x**y;
 }
@@ -65,4 +63,7 @@ console.log("square is :"+squareNum(7,8));
 let getExp=(a,b) =>{
     return a**b;
 }
+
 console.log("Exp is:"+getExp(3,4));
+
+
